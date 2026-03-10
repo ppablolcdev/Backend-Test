@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bsol.Business.Template.Core.TemplateAggregate;
+namespace Bsol.Business.Template.Core.Entidades;
 public class Cuenta
 {
     public Guid Id { get; set; }

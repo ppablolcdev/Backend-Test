@@ -3,25 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Bsol.Business.Template.Core.Entidades;
 using Bsol.Business.Template.Core.Interfaces;
 using Bsol.Business.Template.Core.TemplateAggregate;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Bsol.Business.Template.Core.UseCases.Transacciones;
 public class TransferirDineroHandler
 {
     private readonly IRepositorioCuenta _repositorioCuenta;
     private readonly IRepositorioTransaccion _repositorioTransaccion;
-    private readonly AppDbContext _contexto;
 
     public TransferirDineroHandler(
         IRepositorioCuenta repositorioCuenta,
-        IRepositorioTransaccion repositorioTransaccion,
-        AppDbContext contexto)
+        IRepositorioTransaccion repositorioTransaccion)
     {
         _repositorioCuenta = repositorioCuenta;
         _repositorioTransaccion = repositorioTransaccion;
-        _contexto = contexto;
     }
 
     public async Task<object> Ejecutar(
@@ -29,50 +27,34 @@ public class TransferirDineroHandler
         string numeroCuentaDestino,
         decimal monto)
     {
-        // Iniciamos una transacción de base de datos
-        using var transaccionBD = await _contexto.Database.BeginTransactionAsync();
+        var cuentaOrigen = await _repositorioCuenta.ObtenerPorNumero(numeroCuentaOrigen);
+        var cuentaDestino = await _repositorioCuenta.ObtenerPorNumero(numeroCuentaDestino);
 
-        try
+        if (cuentaOrigen == null || cuentaDestino == null)
+            throw new Exception("Cuenta no encontrada");
+
+        cuentaOrigen.Debitar(monto);
+        cuentaDestino.Acreditar(monto);
+
+        await _repositorioCuenta.Actualizar(cuentaOrigen);
+        await _repositorioCuenta.Actualizar(cuentaDestino);
+
+        var transaccion = new Transaccion
         {
-            var cuentaOrigen = await _repositorioCuenta.ObtenerPorNumero(numeroCuentaOrigen);
-            var cuentaDestino = await _repositorioCuenta.ObtenerPorNumero(numeroCuentaDestino);
+            Id = Guid.NewGuid(),
+            CuentaOrigenId = cuentaOrigen.Id,
+            CuentaDestinoId = cuentaDestino.Id,
+            Monto = monto,
+            Fecha = DateTime.UtcNow,
+            CodigoVoucher = Guid.NewGuid().ToString().Substring(0, 8)
+        };
 
-            if (cuentaOrigen == null || cuentaDestino == null)
-                throw new Exception("Cuenta no encontrada");
+        await _repositorioTransaccion.Registrar(transaccion);
 
-            // Aplicamos reglas de negocio
-            cuentaOrigen.Debitar(monto);
-            cuentaDestino.Acreditar(monto);
-
-            await _repositorioCuenta.Actualizar(cuentaOrigen);
-            await _repositorioCuenta.Actualizar(cuentaDestino);
-
-            var nuevaTransaccion = new Transaccion
-            {
-                Id = Guid.NewGuid(),
-                CuentaOrigenId = cuentaOrigen.Id,
-                CuentaDestinoId = cuentaDestino.Id,
-                Monto = monto,
-                Fecha = DateTime.UtcNow,
-                CodigoVoucher = Guid.NewGuid().ToString().Substring(0, 8)
-            };
-
-            await _repositorioTransaccion.Registrar(nuevaTransaccion);
-
-            await _contexto.SaveChangesAsync();
-
-            await transaccionBD.CommitAsync();
-
-            return new
-            {
-                transactionId = nuevaTransaccion.Id,
-                voucherCode = nuevaTransaccion.CodigoVoucher
-            };
-        }
-        catch
+        return new
         {
-            await transaccionBD.RollbackAsync();
-            throw;
-        }
+            transactionId = transaccion.Id,
+            voucherCode = transaccion.CodigoVoucher
+        };
     }
 }
