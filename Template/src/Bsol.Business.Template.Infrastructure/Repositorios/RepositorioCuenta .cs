@@ -23,9 +23,11 @@ public class RepositorioCuenta : IRepositorioCuenta
         await _contexto.SaveChangesAsync();
     }
 
-    public Task<Cuenta> ObtenerPorId(Guid id)
+    public async Task<Cuenta> ObtenerPorId(Guid id)
     {
-        throw new NotImplementedException();
+
+        return await _contexto.Cuentas
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async  Task<Cuenta> ObtenerPorNumero(string numeroCuenta)
