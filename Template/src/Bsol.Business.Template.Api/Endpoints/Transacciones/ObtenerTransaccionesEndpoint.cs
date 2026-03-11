@@ -11,7 +11,7 @@ public class ObtenerTransacciones(IMediator mediator)
 {
     public override void Configure()
     {
-        Version(1);
+        //Version(1);
         Get("/transactions");
         AllowAnonymous();
     }

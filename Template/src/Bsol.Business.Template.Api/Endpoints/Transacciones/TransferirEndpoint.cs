@@ -10,7 +10,7 @@ public class TransferirEndpoint(IMediator mediator)
 {
     public override void Configure()
     {
-        Version(1);
+        //Version(1);
         Post("/transactions");
         AllowAnonymous();
     }

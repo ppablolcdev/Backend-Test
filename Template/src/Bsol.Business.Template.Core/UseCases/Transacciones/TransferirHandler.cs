@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 using Bsol.Business.Template.Core.Entidades;
 using Bsol.Business.Template.Core.Interfaces;
 using Bsol.Business.Template.Core.TemplateAggregate;
+using MediatR;
 
 
 namespace Bsol.Business.Template.Core.UseCases.Transacciones;
-public class TransferirDineroHandler
+public class TransferirHandler
+    : IRequestHandler<TransferirCommand, TransferirResult>
 {
     private readonly IRepositorioCuenta _repositorioCuenta;
     private readonly IRepositorioTransaccion _repositorioTransaccion;
 
-    public TransferirDineroHandler(
+    public TransferirHandler(
         IRepositorioCuenta repositorioCuenta,
         IRepositorioTransaccion repositorioTransaccion)
     {

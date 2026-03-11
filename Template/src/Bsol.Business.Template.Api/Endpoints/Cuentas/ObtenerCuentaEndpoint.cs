@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Bsol.Business.Template.Api.Endpoints.Cuentas;
 
-public class ObtenerCuenta(IMediator mediator)
+public class ObtenerCuentaEndpoint(IMediator mediator)
     : Endpoint<ObtenerCuentaRequest, Results<Ok<ObtenerCuentaResponse>, NotFound>>
 {
     public override void Configure()
     {
-        Version(1);
+        //Version(1);
         Get("/accounts/{Id}");
         AllowAnonymous();
     }

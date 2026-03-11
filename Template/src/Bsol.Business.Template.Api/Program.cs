@@ -42,6 +42,10 @@ if (!builder.Environment.IsProduction())
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(ObtenerCuentaHandler).Assembly));
 
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(ObtenerCuentaHandler).Assembly)); ;
+
 //builder.Services.AddDbContext<AppDbContext>(options =>
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
