@@ -54,6 +54,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IRepositorioCuenta, RepositorioCuenta>();
 builder.Services.AddScoped<IRepositorioTransaccion, RepositorioTransaccion>();
+builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
