@@ -1,6 +1,9 @@
 ﻿using Bsol.Business.Template.IntegrationTests.Mock.Service;
+using Bsol.Business.Template.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
-using NSubstitute;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Bsol.Business.Template.IntegrationTests.Utils;
 
@@ -14,21 +17,25 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         _wireMockSetup.AddConfiguration(PokeApiMockService.Configure);
         _wireMockSetup.ApplyConfigurations();
     }
-    public HttpClient CreateClientWithMocks(Action<IServiceCollection> configureMocks)
+
+    public HttpClient CreateApiClient()
     {
-        var client = WithWebHostBuilder(builder =>
+        var databaseName = $"BancoDbTests-{Guid.NewGuid()}";
+
+        return WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Test");
             builder.UseSetting("PokeApiService:BaseUrl", _wireMockSetup.BaseUrl);
-
             builder.ConfigureServices(services =>
             {
+                services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
+                services.RemoveAll(typeof(AppDbContext));
+                services.AddDbContext<AppDbContext>(options =>
+                    options.UseInMemoryDatabase(databaseName));
             });
-
         }).CreateClient();
-        client.BaseAddress = new Uri(_wireMockSetup.BaseUrl);
-        return client;
     }
+
     public new void Dispose()
     {
         _wireMockSetup.Dispose();
