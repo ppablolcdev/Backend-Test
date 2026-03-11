@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Bsol.Business.Template.Core.Entidades;
 using Bsol.Business.Template.SharedKernel;
 using Bsol.Business.Template.SharedKernel.Audit;
 using Bsol.Business.Template.SharedKernel.Interfaces;
@@ -31,6 +32,11 @@ public class AppDbContext : DbContext
 
     //User For Audits
     public DbSet<Audit> Audits { get; set; }
+
+    public DbSet<Cuenta> Cuentas { get; set; }
+
+    public DbSet<Transaccion> Transacciones { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
