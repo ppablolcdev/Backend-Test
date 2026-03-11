@@ -36,8 +36,4 @@
     <ProjectReference Include="..\Bsol.Business.Template.Infrastructure\Bsol.Business.Template.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Endpoints\Transacciones\" />
-  </ItemGroup>
-
 </Project>

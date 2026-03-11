@@ -49,6 +49,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("BancoDb"));
 
 builder.Services.AddScoped<IRepositorioCuenta, RepositorioCuenta>();
+builder.Services.AddScoped<IRepositorioTransaccion, RepositorioTransaccion>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

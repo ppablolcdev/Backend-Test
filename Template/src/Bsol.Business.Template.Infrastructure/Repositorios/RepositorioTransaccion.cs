@@ -5,17 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using Bsol.Business.Template.Core.Entidades;
 using Bsol.Business.Template.Core.Interfaces;
+using Bsol.Business.Template.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Bsol.Business.Template.Infrastructure.Repositorios;
 public class RepositorioTransaccion : IRepositorioTransaccion
 {
-    public Task<List<Transaccion>> ObtenerTodas()
+    private readonly AppDbContext _contexto;
+
+    public RepositorioTransaccion(AppDbContext contexto)
     {
-        throw new NotImplementedException();
+        _contexto = contexto;
     }
 
-    public Task Registrar(Transaccion transaccion)
+    public async Task Registrar(Transaccion transaccion)
     {
-        throw new NotImplementedException();
+        _contexto.Transacciones.Add(transaccion);
+
+        await _contexto.SaveChangesAsync();
+    }
+
+    public async Task<List<Transaccion>> ObtenerTodas()
+    {
+        return await _contexto.Transacciones.ToListAsync();
     }
 }

@@ -35,6 +35,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Cuenta> Cuentas { get; set; }
 
+    public DbSet<Transaccion> Transacciones { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
